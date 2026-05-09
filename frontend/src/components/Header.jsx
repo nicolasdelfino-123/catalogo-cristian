@@ -144,19 +144,7 @@ export default function Header() {
   const productsDropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);
 
-  // shrink + mostrar/ocultar
   const [isScrolled, setIsScrolled] = useState(false);
-  const [show, setShow] = useState(true);
-  const lastY = useRef(0);
-  const downScrolls = useRef(0);
-  const isScrolling = useRef(false);
-  const scrollTimeout = useRef(null);
-
-  // ⚙️ Ajustes rápidos de tamaño (en px)
-  const LOGO_BASE_H = 220;    // Altura normal del logo
-  const LOGO_SCROLL_H = 195;  // Altura cuando se hace scroll (más pequeño)
-  const LOGO_W = "auto";
-  const USE_WHITE_KILLER = false;
 
   // Cerrar dropdown cuando se hace click fuera
   useEffect(() => {
