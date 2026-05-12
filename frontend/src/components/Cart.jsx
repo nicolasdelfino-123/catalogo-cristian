@@ -1,7 +1,7 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Context } from "../js/store/appContext.jsx";
-import { useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { storeConfig } from "../config/storeConfig.js";
 
 
@@ -36,15 +36,50 @@ const getSelectedMl = (it) => {
   return Number.isFinite(n) && n > 0 ? Math.floor(n) : null;
 };
 
+// BLOQUE WHATSAPP SEGURO A REPLICAR EN OTRAS APPS
+const buildWhatsAppUrl = (phone, message) => {
+  const encodedMessage = encodeURIComponent(message);
+  const userAgent = navigator.userAgent || "";
+
+  if (/android|iphone|ipad|ipod/i.test(userAgent)) {
+    return `whatsapp://send?phone=${phone}&text=${encodedMessage}`;
+  }
+
+  return `https://wa.me/${phone}?text=${encodedMessage}`;
+};
+
+const buildWhatsAppWebUrl = (phone, message) => {
+  const encodedMessage = encodeURIComponent(message);
+  return `https://api.whatsapp.com/send?phone=${phone}&text=${encodedMessage}&type=phone_number&app_absent=0`;
+};
+
+const openWhatsAppFallbackUrl = (url) => {
+  const whatsappWindow = window.open("about:blank", "_blank");
+  if (whatsappWindow) {
+    whatsappWindow.opener = null;
+    whatsappWindow.location.href = url;
+  } else {
+    window.location.href = url;
+  }
+};
+
 export default function Cart({ isOpen: controlledOpen, onClose: controlledOnClose }) {
   const { store, actions } = useContext(Context);
   const [showCheckout, setShowCheckout] = useState(false);
+  const [sendingOrder, setSendingOrder] = useState(false);
+  const [whatsappOrderPrompt, setWhatsappOrderPrompt] = useState(null);
 
   const [customerData, setCustomerData] = useState(() => {
     const saved = localStorage.getItem("customerData");
-    return saved
-      ? JSON.parse(saved)
-      : { name: "", zone: "", payment: "" };
+    const defaults = { name: "", phone: "", zone: "", payment: "" };
+
+    if (!saved) return defaults;
+
+    try {
+      return { ...defaults, ...JSON.parse(saved) };
+    } catch {
+      return defaults;
+    }
   });
 
   const navigate = useNavigate();
@@ -164,11 +199,19 @@ export default function Cart({ isOpen: controlledOpen, onClose: controlledOnClos
 
 
   const sendOrder = async () => {
+    if (sendingOrder) return;
 
-    if (!customerData.name || !customerData.zone || !customerData.payment) {
+    if (!store.cart || store.cart.length === 0) {
+      alert("Tu carrito está vacío");
+      return;
+    }
+
+    if (!customerData.name.trim() || !customerData.phone.trim() || !customerData.zone.trim() || !customerData.payment.trim()) {
       alert("Por favor completá tus datos");
       return;
     }
+
+    setSendingOrder(true);
 
     localStorage.setItem("customerData", JSON.stringify(customerData));
 
@@ -179,6 +222,7 @@ export default function Cart({ isOpen: controlledOpen, onClose: controlledOnClos
 Datos del cliente:
 
 Nombre: ${customerData.name}
+Teléfono: ${customerData.phone}
 Localidad / Zona: ${customerData.zone}
 Pago: ${customerData.payment}
 
@@ -209,60 +253,64 @@ Pago: ${customerData.payment}
       0
     );
 
-    // 🔹 enviar pedido al backend
-    try {
-      await fetch(`/public/orders`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
+    const whatsappUrl = buildWhatsAppUrl(whatsappPhone, finalMessage);
+    const whatsappFallbackUrl = buildWhatsAppWebUrl(whatsappPhone, finalMessage);
+
+    const redirectToWhatsApp = () => {
+      if (whatsappUrl.startsWith("whatsapp://")) {
+        window.location.href = whatsappUrl;
+        return;
+      }
+
+      const opened = window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+      if (!opened) {
+        window.location.href = whatsappUrl;
+      }
+    };
+
+    const saveOrder = fetch(`${API}/public/orders`, {
+      method: "POST",
+      keepalive: true,
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        customer_first_name: customerData.name,
+        customer_last_name: "",
+        customer_phone: customerData.phone,
+        shipping_address: {
+          city: customerData.zone,
+          label: customerData.zone,
+          phone: customerData.phone
         },
-        body: JSON.stringify({
-          customer_first_name: customerData.name,
-          customer_last_name: "",
-          customer_phone: "",
-          shipping_address: {
-            city: customerData.zone,
-            label: customerData.zone
-          },
-          payment_method: customerData.payment,
-          order_items: orderItems,
-          total_amount: totalAmount,
-          status: "pendiente"
-        })
-      });
+        payment_method: customerData.payment,
+        order_items: orderItems,
+        total_amount: totalAmount,
+        status: "pendiente"
+      })
+    });
+
+    setWhatsappOrderPrompt({
+      fallbackUrl: whatsappFallbackUrl,
+      status: "saving"
+    });
+    setShowCheckout(false);
+    redirectToWhatsApp();
+
+    try {
+      const response = await saveOrder;
+      if (!response.ok) throw new Error(`Error HTTP ${response.status}`);
+      setWhatsappOrderPrompt(prev => prev ? { ...prev, status: "saved" } : prev);
     } catch (err) {
       console.error("Error guardando pedido:", err);
+      setWhatsappOrderPrompt(prev => prev
+        ? { ...prev, status: "failed" }
+        : { fallbackUrl: whatsappFallbackUrl, status: "failed" }
+      );
+    } finally {
+      setSendingOrder(false);
     }
-
-    // ✅ encode SOLO AQUÍ
-    const url = `https://wa.me/${whatsappPhone}?text=${encodeURIComponent(finalMessage)}`;
-
-    window.open(url, "_blank");
-
-    // vaciar carrito
-    actions.clearCart?.();   // o resetCart, según tu store
-    localStorage.removeItem("cart");
-
-    setShowCheckout(false);
   };
-
-
-
-  // ===============================
-  // ABRIR WHATSAPP
-  // ===============================
-
-  const sendToWhatsApp = () => {
-    const text = buildWhatsAppMessage();
-
-    const url = `https://wa.me/${whatsappPhone}?text=${encodeURIComponent(text)}`;
-
-    window.open(url, "_blank");
-  };
-
-
-  const [postalCode, setPostalCode] = useState("");
-  const [pickup, setPickup] = useState(false);
 
   useEffect(() => {
     const onKey = (e) => e.key === "Escape" && isOpen && close();
@@ -559,6 +607,17 @@ Pago: ${customerData.payment}
               placeholder="Nombre y Apellido"
               value={customerData.name}
               onChange={handleCustomerChange}
+              required
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 mb-3 font-serif tracking-wide focus:outline-none focus:border-gray-900"
+            />
+
+            <input
+              type="tel"
+              name="phone"
+              placeholder="Teléfono"
+              value={customerData.phone}
+              onChange={handleCustomerChange}
+              required
               className="w-full border border-gray-300 rounded-lg px-3 py-2 mb-3 font-serif tracking-wide focus:outline-none focus:border-gray-900"
             />
 
@@ -568,6 +627,7 @@ Pago: ${customerData.payment}
               placeholder="Zona / Localidad"
               value={customerData.zone}
               onChange={handleCustomerChange}
+              required
               className="w-full border border-gray-300 rounded-lg px-3 py-2 mb-3 font-serif tracking-wide focus:outline-none focus:border-gray-900"
             />
 
@@ -617,9 +677,60 @@ Pago: ${customerData.payment}
 
               <button
                 onClick={sendOrder}
+                disabled={sendingOrder}
+                className="px-4 py-2 bg-[#232325] text-white rounded-lg font-serif tracking-wide hover:bg-black transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {sendingOrder ? "Enviando..." : "Enviar pedido"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {whatsappOrderPrompt && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[210]">
+          <div className="bg-white rounded-lg p-6 w-[90%] max-w-md shadow-xl">
+            <h2 className="text-xl font-serif tracking-wide text-gray-900 mb-3 text-center">
+              ¿Pedido enviado?
+            </h2>
+            <p className="text-sm text-gray-500 font-serif tracking-wide mb-5 text-center">
+              Si WhatsApp no se abrió, podés intentarlo otra vez. Si ya enviaste el mensaje, vaciá el carrito.
+            </p>
+
+            {whatsappOrderPrompt.status === "saving" && (
+              <p className="text-xs text-gray-500 font-serif tracking-wide mb-4 text-center">
+                Guardando el pedido en el panel...
+              </p>
+            )}
+
+            {whatsappOrderPrompt.status === "failed" && (
+              <p className="text-xs text-red-600 font-serif tracking-wide mb-4 text-center">
+                Si no enviaste el pedido por WhatsApp, por favor intentá nuevamente.
+              </p>
+            )}
+
+            <div className="flex flex-col gap-2 sm:flex-row sm:justify-end">
+              <button
+                onClick={() => setWhatsappOrderPrompt(null)}
+                className="px-4 py-2 border border-gray-300 rounded-lg font-serif tracking-wide hover:bg-gray-100 transition-colors"
+              >
+                Volver
+              </button>
+              <button
+                onClick={() => openWhatsAppFallbackUrl(whatsappOrderPrompt.fallbackUrl)}
+                className="px-4 py-2 border border-gray-300 rounded-lg font-serif tracking-wide hover:bg-gray-100 transition-colors"
+              >
+                Abrir WhatsApp
+              </button>
+              <button
+                onClick={() => {
+                  actions.clearCart?.();
+                  setWhatsappOrderPrompt(null);
+                  setShowCheckout(false);
+                }}
                 className="px-4 py-2 bg-[#232325] text-white rounded-lg font-serif tracking-wide hover:bg-black transition-colors"
               >
-                Enviar pedido
+                Ya envié el pedido
               </button>
             </div>
           </div>
