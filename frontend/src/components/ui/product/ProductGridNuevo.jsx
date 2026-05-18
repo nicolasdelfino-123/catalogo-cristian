@@ -10,7 +10,7 @@ import SidebarFiltersNuevo from "./SidebarFiltersNuevo.jsx";     // o "./Sidebar
 import Modal from "../../Modal.jsx";
 import { ChevronRight, ChevronLeft, ArrowUpDown } from "lucide-react";
 import { withWholesale } from "../../../utils/wholesaleMode.js";
-import { getNormalizedCategoryId, SLUG_TO_ID, SLUG_TO_NAME } from "../../../utils/perfumeCategories.js";
+import { getNormalizedCategoryId, SLUG_TO_ID, SLUG_TO_IDS, SLUG_TO_NAME } from "../../../utils/perfumeCategories.js";
 
 // -----------------------------
 // Persistencia ligera en sessionStorage
@@ -150,6 +150,7 @@ export default function ProductGridNuevo({ category, hideFilters = false }) {
 
     const currentSlug = slug;
     const currentCategoryId = currentSlug ? SLUG_TO_ID[currentSlug] : null;
+    const currentCategoryIds = currentSlug ? SLUG_TO_IDS[currentSlug] || [] : [];
 
     const searchTerm = store.productSearch || "";
     const setSearchTerm = (val) => actions.searchProducts(val);
@@ -268,13 +269,14 @@ export default function ProductGridNuevo({ category, hideFilters = false }) {
         if (hideFilters && !currentCategoryId) return products.slice(0, 12);
 
         // Todos
-        if (!currentCategoryId) return products;
+        if (!currentCategoryIds.length) return products;
 
-        // Categoría actual
+        // Categoría actual y, si es padre, sus subcategorías
+        const allowedCategoryIds = new Set(currentCategoryIds.map(Number));
         return products.filter(
-            (p) => getNormalizedCategoryId(p) === Number(currentCategoryId)
+            (p) => allowedCategoryIds.has(getNormalizedCategoryId(p))
         );
-    }, [store.products, currentCategoryId, slug, category, hideFilters]);
+    }, [store.products, currentCategoryId, currentCategoryIds, slug, category, hideFilters]);
 
     // -----------------------------
     // Opciones de filtros

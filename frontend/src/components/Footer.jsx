@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { withWholesale } from '../utils/navigation.js'
-import { PERFUME_CATEGORY_DEFINITIONS as FOOTER_CATEGORIES } from '../utils/perfumeCategories.js'
+import { PERFUME_CATEGORY_TREE as FOOTER_CATEGORIES } from '../utils/perfumeCategories.js'
 
 import { storeConfig } from "../config/storeConfig";
 

@@ -5,7 +5,7 @@ import ProductCardPerfumes from "../components/ui/cards/ProductCardPerfumes.jsx"
 import HomeContact from "../components/home/HomeContact.jsx";
 import Asesoria from "../components/Asesoria.jsx";
 import { storeConfig } from "../config/storeConfig";
-import { getNormalizedCategoryId } from "../utils/perfumeCategories.js";
+import { getNormalizedCategoryId, mapCategoryIdFromName } from "../utils/perfumeCategories.js";
 
 import afnan from '../assets/afnan.webp'
 import al from '../assets/al.webp'
@@ -44,12 +44,14 @@ export default function InicioNuevo() {
 
     const MAP_EMBED = storeConfig.map.embed;
     const allProducts = store.products || [];
+    const womenCategoryId = mapCategoryIdFromName("Femeninos");
+    const menCategoryId = mapCategoryIdFromName("Masculinos");
     const getProductPrice = (product) => {
         const price = Number(product?.price);
         return Number.isFinite(price) ? price : Number.POSITIVE_INFINITY;
     };
-    const isWomenFragrance = (product) => getNormalizedCategoryId(product) === 2;
-    const isMenFragrance = (product) => getNormalizedCategoryId(product) === 1;
+    const isWomenFragrance = (product) => getNormalizedCategoryId(product) === womenCategoryId;
+    const isMenFragrance = (product) => getNormalizedCategoryId(product) === menCategoryId;
 
     const womenFeatured = allProducts
         .filter(isWomenFragrance)

@@ -3,6 +3,9 @@ import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Context } from "../js/store/appContext";
 import { AlertCircle, CheckCircle } from "lucide-react";
+import { getApiUrl } from "../utils/apiUrl.js";
+
+const API = getApiUrl();
 
 export default function AdminChangeEmail() {
     const { actions } = useContext(Context);
@@ -43,7 +46,7 @@ export default function AdminChangeEmail() {
         try {
             const token = localStorage.getItem("token");
             const response = await fetch(
-                `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/auth/change-email`,
+                `${API}/auth/change-email`,
                 {
                     method: "POST",
                     headers: {

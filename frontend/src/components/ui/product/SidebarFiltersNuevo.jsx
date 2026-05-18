@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { Menu, X } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { withWholesale } from "../../../utils/wholesaleMode"; // ✅ ruta correcta desde /components/product
-import { PERFUME_CATEGORY_DEFINITIONS as CATEGORIES } from "../../../utils/perfumeCategories.js";
+import { PERFUME_CATEGORY_TREE as CATEGORIES } from "../../../utils/perfumeCategories.js";
 
 export default function SidebarFiltersNuevo({
     currentCategorySlug,
@@ -30,6 +30,7 @@ export default function SidebarFiltersNuevo({
 }) {
     const [open, setOpen] = useState(false);
     const [draftPrice, setDraftPrice] = useState(null); // {min,max} mientras el usuario ajusta
+    const [expandedCategory, setExpandedCategory] = useState(null);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -194,12 +195,19 @@ export default function SidebarFiltersNuevo({
                 </h4>
                 <ul className="space-y-2">
                     {CATEGORIES.map((c) => {
+                        const hasChildren = (c.children || []).length > 0;
+                        const childActive = c.children?.some((child) => child.slug === currentCategorySlug);
                         const active = c.slug === currentCategorySlug;
+                        const expanded = expandedCategory === c.slug || childActive;
 
                         return (
                             <li key={c.slug}>
                                 <button
                                     onClick={() => {
+                                        if (hasChildren) {
+                                            setExpandedCategory((current) => current === c.slug ? null : c.slug);
+                                            return;
+                                        }
                                         if (onSelectCategory) {
                                             onSelectCategory(c.slug);
                                         } else {
@@ -209,13 +217,41 @@ export default function SidebarFiltersNuevo({
                                         }
                                         setOpen(false);
                                     }}
-                                    className={`w-full text-left py-2 border-b border-stone-200 font-serif transition-all duration-300 focus:outline-none ${active
+                                    className={`flex w-full items-center justify-between py-2 border-b border-stone-200 font-serif transition-all duration-300 focus:outline-none ${active || childActive
                                         ? "text-[#232325] font-semibold border-[#232325]"
                                         : "text-stone-700 hover:text-[#d4af37] hover:border-[#d4af37]"
                                         }`}
                                 >
-                                    {c.name}
+                                    <span>{c.name}</span>
+                                    {hasChildren && (
+                                        <span className={`transition-transform ${expanded ? "rotate-90" : ""}`}>›</span>
+                                    )}
                                 </button>
+                                {expanded && c.children?.map((child) => {
+                                    const childActive = child.slug === currentCategorySlug;
+
+                                    return (
+                                        <button
+                                            key={child.slug}
+                                            onClick={() => {
+                                                if (onSelectCategory) {
+                                                    onSelectCategory(child.slug);
+                                                } else {
+                                                    const isWholesale = location.pathname.startsWith("/mayorista");
+                                                    const base = isWholesale ? "/mayorista" : "";
+                                                    navigate(`${base}/categoria/${child.slug}`);
+                                                }
+                                                setOpen(false);
+                                            }}
+                                            className={`w-full text-left py-2 pl-4 border-b border-stone-100 font-serif text-sm transition-all duration-300 focus:outline-none ${childActive
+                                                ? "text-[#232325] font-semibold border-[#232325]"
+                                                : "text-stone-600 hover:text-[#d4af37] hover:border-[#d4af37]"
+                                                }`}
+                                        >
+                                            {child.name}
+                                        </button>
+                                    );
+                                })}
 
                             </li>
                         );

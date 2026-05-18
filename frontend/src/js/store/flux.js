@@ -1,6 +1,7 @@
 import { PERFUME_CATEGORY_NAMES } from "../../utils/perfumeCategories.js";
+import { getApiUrl } from "../../utils/apiUrl.js";
 
-const backendUrl = import.meta.env.VITE_BACKEND_URL;
+const backendUrl = getApiUrl();
 
 const getState = ({ getStore, getActions, setStore }) => {
 	return {

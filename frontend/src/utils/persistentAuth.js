@@ -6,9 +6,11 @@
  * import { loginPersistent, getPersistentToken, refreshTokenIfNeeded } from "@/utils/persistentAuth"
  */
 
+import { getApiUrl } from "./apiUrl.js";
+
 const PERSISTENT_TOKEN_KEY = "persistent_token";
 const TOKEN_EXPIRY_KEY = "token_expiry";
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_URL = getApiUrl();
 
 /**
  * Login con sesión persistente (7 días sin caída)

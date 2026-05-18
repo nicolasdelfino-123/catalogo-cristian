@@ -2,6 +2,9 @@ import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Context } from "../js/store/appContext";
 import { AlertCircle, CheckCircle, EyeOff, Eye } from "lucide-react";
+import { getApiUrl } from "../utils/apiUrl.js";
+
+const API = getApiUrl();
 
 /**
  * AdminChangePassword - Componente modularizado para cambiar contraseña
@@ -73,7 +76,7 @@ export default function AdminChangePassword() {
         try {
 
             const response = await fetch(
-                `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/auth/change-password`,
+                `${API}/auth/change-password`,
                 {
                     method: "POST",
                     headers: {

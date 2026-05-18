@@ -3,7 +3,7 @@ import { storeConfig } from "../config/storeConfig";
 export const DEFAULT_CATEGORY_ID = 1;
 
 // Contrato técnico de categorías: estos IDs son los que viajan como category_id a la DB.
-// Los nombres visibles se configuran desde storeConfig.catalog.categories.
+// Los labels, el orden y la jerarquía visible se configuran desde storeConfig.catalog.categories.
 const PERFUME_CATEGORY_ID_DEFINITIONS = [
     { id: 1, fallbackName: "Masculinos", slug: "masculinos" },
     { id: 2, fallbackName: "Femeninos", slug: "femeninos" },
@@ -33,32 +33,55 @@ const configuredCategories = Array.isArray(storeConfig.catalog?.categories)
     ? storeConfig.catalog.categories
     : [];
 
-const configuredDefinitions = configuredCategories
-    .map((category) => {
-        const id = Number(category?.id);
-        if (!Number.isFinite(id)) return null;
+const buildCategoryTree = (categories = [], parentId = null, level = 0) =>
+    categories
+        .map((category) => {
+            const id = Number(category?.id);
+            if (!Number.isFinite(id)) return null;
 
-        const base = baseDefinitionById[id];
-        const name = String(category?.label || base?.fallbackName || `Categoría ${id}`).trim();
-        const slug = String(category?.slug || base?.slug || slugifyCategoryLabel(name) || `categoria-${id}`).trim();
+            const base = baseDefinitionById[id];
+            const name = String(category?.label || category?.name || base?.fallbackName || `Categoría ${id}`).trim();
+            const slug = String(category?.slug || base?.slug || slugifyCategoryLabel(name) || `categoria-${id}`).trim();
+            const children = buildCategoryTree(category?.children || [], id, level + 1);
 
-        return {
-            id,
-            name,
-            slug,
-            fallbackName: base?.fallbackName || name,
-        };
-    })
-    .filter(Boolean);
+            return {
+                id,
+                name,
+                slug,
+                parentId,
+                level,
+                children,
+                fallbackName: base?.fallbackName || name,
+            };
+        })
+        .filter(Boolean);
 
-export const PERFUME_CATEGORY_DEFINITIONS = configuredDefinitions.length
-    ? configuredDefinitions
-    : PERFUME_CATEGORY_ID_DEFINITIONS.map((category) => ({
-        id: category.id,
-        name: category.fallbackName,
-        slug: category.slug,
-        fallbackName: category.fallbackName,
-    }));
+const fallbackTree = PERFUME_CATEGORY_ID_DEFINITIONS.map((category) => ({
+    id: category.id,
+    name: category.fallbackName,
+    slug: category.slug,
+    parentId: null,
+    level: 0,
+    children: [],
+    fallbackName: category.fallbackName,
+}));
+
+export const PERFUME_CATEGORY_TREE = configuredCategories.length
+    ? buildCategoryTree(configuredCategories)
+    : fallbackTree;
+
+const flattenCategories = (categories = []) =>
+    categories.flatMap((category) => [
+        category,
+        ...flattenCategories(category.children || []),
+    ]);
+
+const getCategoryAndDescendantIds = (category) => [
+    category.id,
+    ...(category.children || []).flatMap(getCategoryAndDescendantIds),
+];
+
+export const PERFUME_CATEGORY_DEFINITIONS = flattenCategories(PERFUME_CATEGORY_TREE);
 
 export const PERFUME_CATEGORY_NAMES = PERFUME_CATEGORY_DEFINITIONS.map((category) => category.name);
 
@@ -78,23 +101,31 @@ export const SLUG_TO_ID = Object.fromEntries(
     PERFUME_CATEGORY_DEFINITIONS.map((category) => [category.slug, category.id])
 );
 
+export const SLUG_TO_IDS = Object.fromEntries(
+    PERFUME_CATEGORY_DEFINITIONS.map((category) => [category.slug, getCategoryAndDescendantIds(category)])
+);
+
 export const NAME_TO_SLUG = Object.fromEntries(
     PERFUME_CATEGORY_DEFINITIONS.map((category) => [category.name, category.slug])
 );
 
-const LEGACY_NAME_TO_SLUG = Object.fromEntries(
-    PERFUME_CATEGORY_DEFINITIONS.flatMap((category) => [
-        [category.name, category.slug],
-        [category.fallbackName, category.slug],
-    ])
-);
+const LEGACY_NAME_TO_SLUG = {
+    ...Object.fromEntries(
+        PERFUME_CATEGORY_DEFINITIONS.map((category) => [category.fallbackName, category.slug])
+    ),
+    ...Object.fromEntries(
+        PERFUME_CATEGORY_DEFINITIONS.map((category) => [category.name, category.slug])
+    ),
+};
 
-const NORMALIZED_NAME_TO_ID = Object.fromEntries(
-    PERFUME_CATEGORY_DEFINITIONS.flatMap((category) => [
-        [normalizeCategoryLabel(category.name), category.id],
-        [normalizeCategoryLabel(category.fallbackName), category.id],
-    ])
-);
+const NORMALIZED_NAME_TO_ID = {
+    ...Object.fromEntries(
+        PERFUME_CATEGORY_DEFINITIONS.map((category) => [normalizeCategoryLabel(category.fallbackName), category.id])
+    ),
+    ...Object.fromEntries(
+        PERFUME_CATEGORY_DEFINITIONS.map((category) => [normalizeCategoryLabel(category.name), category.id])
+    ),
+};
 
 export const mapCategoryIdFromName = (value = "") => {
     const normalized = normalizeCategoryLabel(value);

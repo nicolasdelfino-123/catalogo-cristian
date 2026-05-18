@@ -33,15 +33,31 @@ export const storeConfig = {
         // Cambia el texto chico de las cards del listado: "category" muestra la categoría y "brand" muestra la marca del producto.
         productCardMeta: "brand", // "category" | "brand"
 
-        // Categorías visibles del catálogo.
-        // El id es el valor real que se guarda/envía a la DB como category_id.
+        // Categorías visibles del catálogo. Pueden tener hijos con "children".
+        // Cada id es un valor real que se guarda/envía a la DB como category_id.
         // El label es el nombre que se muestra en header, footer, filtros, cards y admin.
         // El orden de esta lista define el orden visual en los dropdowns y menús.
         // slug es opcional; si no lo ponés, usa el slug técnico definido en perfumeCategories o lo genera desde el label.
         categories: [
-            { id: 1, label: "Masculinos" },
-            { id: 2, label: "Femeninos" },
-            { id: 3, label: "Unisex" },
+            {
+                id: 1,
+                label: "Perfumes",
+                slug: "perfumes",
+                children: [
+                    { id: 3, label: "Femeninos", slug: "femeninos" },
+                    { id: 4, label: "Masculinos", slug: "masculinos" },
+                    { id: 5, label: "Unisex", slug: "unisex" },
+                ],
+            },
+            {
+                id: 2,
+                label: "Gafas",
+                slug: "gafas",
+                children: [
+                    { id: 6, label: "Ray-Ban", slug: "ray-ban" },
+                    { id: 7, label: "Scuderia Ferrari", slug: "scuderia-ferrari" },
+                ],
+            },
         ],
     },
 

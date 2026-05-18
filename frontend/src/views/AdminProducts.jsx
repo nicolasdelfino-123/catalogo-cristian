@@ -11,7 +11,6 @@ import {
     getDisplayCategoryName,
     mapCategoryIdFromName,
     PERFUME_CATEGORY_DEFINITIONS,
-    PERFUME_CATEGORY_NAMES,
 } from "../utils/perfumeCategories.js";
 
 
@@ -411,7 +410,7 @@ const clearPricingInputs = (state) => ({
 // ----- Componente principal -----
 export default function AdminProducts() {
     const [products, setProducts] = useState([])
-    const categories = PERFUME_CATEGORY_NAMES
+    const categories = PERFUME_CATEGORY_DEFINITIONS
     const defaultCategory = PERFUME_CATEGORY_DEFINITIONS[0]
     const defaultCategoryId = defaultCategory?.id || 1
     const defaultCategoryName = defaultCategory?.name || "Sin categoría"
@@ -1295,7 +1294,7 @@ export default function AdminProducts() {
             <h1 className="text-2xl font-bold mb-4 text-center">Admin Productos</h1>
 
             {/* Barra superior */}
-            <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-end gap-3 mb-4">
+            <div className={`flex flex-col sm:flex-row sm:flex-wrap sm:items-end mb-4 ${budgetMode ? "gap-2" : "gap-3"}`}>
                 <div className={`flex flex-col min-w-0 ${budgetMode ? "sm:basis-full sm:order-last" : "flex-1"}`}>
                     <label className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 mb-1">
                         Buscar
@@ -1327,13 +1326,13 @@ export default function AdminProducts() {
                     <select
                         value={selectedCategory}
                         onChange={(e) => setSelectedCategory(e.target.value)}
-                        className="border rounded px-3 py-2 sm:w-48"
+                        className="border rounded px-3 py-2 sm:w-44"
                     >
                         <option value="Todos">Todas las categorías</option>
                         <option value={HOME_CATEGORY_FILTER}>Inicio</option>
                         {categories.map((cat) => (
-                            <option key={cat} value={cat}>
-                                {cat}
+                            <option key={cat.id} value={cat.name}>
+                                {"— ".repeat(cat.level || 0)}{cat.name}
                             </option>
                         ))}
                     </select>
@@ -1345,7 +1344,7 @@ export default function AdminProducts() {
                     <select
                         value={selectedStatus}
                         onChange={(e) => setSelectedStatus(e.target.value)}
-                        className="border rounded px-3 py-2 sm:w-44"
+                        className="border rounded px-3 py-2 sm:w-32"
                     >
                         <option value="todos">Ver todos</option>
                         <option value="activos">Ver activos</option>
@@ -1359,7 +1358,7 @@ export default function AdminProducts() {
                     <select
                         value={selectedStockFilter}
                         onChange={(e) => setSelectedStockFilter(e.target.value)}
-                        className="border rounded px-3 py-2 sm:w-44"
+                        className="border rounded px-3 py-2 sm:w-36"
                     >
                         <option value="todos">Ver todos</option>
                         <option value="sin_stock">Ver sin stock</option>
@@ -1405,7 +1404,7 @@ export default function AdminProducts() {
                     })}
 
 
-                    className="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700"
+                    className="w-full bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700 sm:w-auto"
                 >
                     Nuevo
                 </button>
@@ -1419,7 +1418,7 @@ export default function AdminProducts() {
 
                 <Link
                     to="/admin/pedidos"
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 inline-block text-center"
+                    className="inline-block w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-center sm:w-auto"
                 >
                     Ver pedidos
                 </Link>
@@ -1487,48 +1486,58 @@ export default function AdminProducts() {
                 />
             </div>
 
-            {hasActiveFilters && (
-                <div className="mb-4 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 rounded-lg border border-amber-200 bg-amber-50/60 px-3 py-2">
-                    <div className="text-xs font-semibold text-amber-950 bg-amber-200/80 border border-amber-300 rounded-md px-2.5 py-1 whitespace-nowrap"
-                    >
-                        Filtros activos
-                    </div>
-                    <div className="flex flex-wrap gap-2 min-w-0">
-                        {activeFilters.map((item) => (
-                            <div
-                                key={item.key}
-                                className="inline-flex items-center gap-1.5 rounded-full bg-white border border-amber-300 pl-2.5 pr-1.5 py-1 text-xs font-medium text-amber-800"
-                            >
-                                <span>{item.label}</span>
-                                <button
-                                    type="button"
-                                    onClick={item.onClear}
-                                    className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-amber-600 text-white hover:bg-amber-700 transition-colors"
-                                    aria-label={`Quitar filtro ${item.label}`}
-                                    title={`Quitar ${item.label}`}
-                                >
-                                    ×
-                                </button>
+            <div className="mb-3 space-y-2">
+                {hasActiveFilters && (
+                    <div className="flex flex-col gap-2 rounded-lg border border-amber-200 bg-amber-50/60 px-3 py-2 lg:flex-row lg:items-center lg:justify-between">
+                        <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+                            <div className="text-xs font-semibold text-amber-950 bg-amber-200/80 border border-amber-300 rounded-md px-2.5 py-1 whitespace-nowrap">
+                                Filtros activos
                             </div>
-                        ))}
+                            <div className="flex flex-wrap gap-2 min-w-0">
+                                {activeFilters.map((item) => (
+                                    <div
+                                        key={item.key}
+                                        className="inline-flex items-center gap-1.5 rounded-full bg-white border border-amber-300 pl-2.5 pr-1.5 py-1 text-xs font-medium text-amber-800"
+                                    >
+                                        <span>{item.label}</span>
+                                        <button
+                                            type="button"
+                                            onClick={item.onClear}
+                                            className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-amber-600 text-white hover:bg-amber-700 transition-colors"
+                                            aria-label={`Quitar filtro ${item.label}`}
+                                            title={`Quitar ${item.label}`}
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                            <button
+                                type="button"
+                                onClick={clearAllFilters}
+                                className="text-xs font-medium text-white bg-amber-700 hover:bg-amber-600 border border-amber-500 rounded-md px-2.5 py-1 transition-colors whitespace-nowrap"
+                            >
+                                Limpiar filtros
+                            </button>
+                        </div>
+                        <div className="text-xs text-blue-900 lg:text-right">
+                            Tildá hasta {MAX_HOME_FEATURED_PRODUCTS} productos para mostrarlos en Inicio.
+                            <span className="mx-1.5 text-blue-400">·</span>
+                            Productos en esta página: {filtered.length}
+                        </div>
                     </div>
-                    <button
-                        type="button"
-                        onClick={clearAllFilters}
-                        className="text-xs font-medium text-white bg-amber-700 hover:bg-amber-600 border border-amber-500 rounded-md px-2.5 py-1 transition-colors whitespace-nowrap"
-                    >
-                        Limpiar filtros
-                    </button>
-                </div>
-            )}
+                )}
 
-            <div className="mb-3 flex flex-col gap-1 rounded-lg border border-blue-100 bg-blue-50/70 px-3 py-2 text-sm sm:flex-row sm:items-center sm:justify-between">
-                <div className="font-semibold text-blue-950">
+                {!hasActiveFilters && (
+                    <div className="text-xs text-blue-900 sm:text-right">
+                        Tildá hasta {MAX_HOME_FEATURED_PRODUCTS} productos para mostrarlos en Inicio.
+                        <span className="mx-1.5 text-blue-400">·</span>
+                        Productos en esta página: {filtered.length}
+                    </div>
+                )}
+
+                <div className="rounded-lg border border-blue-100 bg-blue-50/70 px-3 py-2 text-sm font-semibold text-blue-950">
                     Productos en Inicio: {featuredProductIds.length} / {MAX_HOME_FEATURED_PRODUCTS}
-                </div>
-                <div className="text-xs text-blue-900 sm:text-right">
-                    <div>Tildá hasta {MAX_HOME_FEATURED_PRODUCTS} productos para mostrarlos en Inicio.</div>
-                    <div>Productos en esta página: {filtered.length}</div>
                 </div>
             </div>
 
@@ -2551,7 +2560,7 @@ export default function AdminProducts() {
                             <option value="">Selecciona categoría</option>
                             {PERFUME_CATEGORY_DEFINITIONS.map((category) => (
                                 <option key={category.id} value={category.id}>
-                                    {category.name}
+                                    {"— ".repeat(category.level || 0)}{category.name}
                                 </option>
                             ))}
                         </select>
