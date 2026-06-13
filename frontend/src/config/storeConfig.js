@@ -34,7 +34,7 @@ export const storeConfig = {
     currency: {
         // Texto visible antes de los precios en cards, detalle, carrito, admin, toast y presupuestos.
         // Ejemplos: "$", "COP", "USD", "CLP", "S/"
-        symbol: "COP",
+        symbol: "$",
     },
 
     hero: {
