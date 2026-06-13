@@ -149,9 +149,9 @@ export const storeConfig = {
     },
 
     business: {
-        address: "Stand Mall Espacio Urbano Pionero",
-        city: "Segundo piso (casi al lado de Tarragona)",
-        hours: "Lunes a Sábado 10:30–20:30 - Domingo 11:00–20:00",
+        address: "Stand Mall, Espacio Urbano Pionero",
+        city: "Segundo piso, (casi al lado de Tarragona)",
+        hours: "Lunes a Sábado, 10:30–20:30 - Domingo 11:00–20:00",
     },
 
     media: {

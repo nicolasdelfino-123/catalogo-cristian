@@ -351,12 +351,12 @@ shadow-lg shadow-amber-500/20
                         </span>
 
                         <h2 className="mt-4 text-4xl sm:text-5xl font-extrabold text-gray-900">
-                            {ADDRESS.split(",")[0]}
+                            {ADDRESS}
                         </h2>
                         <p className="mt-2 text-lg text-gray-500">
-                            {ADDRESS_CITY.replace(ADDRESS_CITY.split(",")[0] + ", ", "")}
+                            {ADDRESS_CITY}
                         </p>
-                        <p className="mt-2 text-lg text-gray-500">Punta Arenas</p>
+
 
                         <p className="mt-2 text-gray-600">{HOURS}</p>
 

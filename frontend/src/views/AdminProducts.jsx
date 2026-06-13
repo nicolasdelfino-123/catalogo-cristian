@@ -2231,9 +2231,9 @@ export default function AdminProducts() {
             {productToHide && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4">
                     <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
-                        <h2 className="text-xl font-semibold text-gray-900">Ocultar producto</h2>
+                        <h2 className="text-xl font-semibold text-gray-900 text-center">Eliminar producto</h2>
                         <p className="mt-2 text-sm text-gray-600">
-                            El producto no se va a borrar de la base de datos. Solo se va a ocultar del admin y de la pagina.
+                            ¿Estás seguro de que querés eliminar este producto? Dejará de mostrarse en el catálogo y en el panel de administración.
                         </p>
 
                         <div className="mt-4 rounded border border-gray-200 bg-gray-50 p-3 text-sm text-gray-700">
@@ -2265,7 +2265,7 @@ export default function AdminProducts() {
                                 disabled={hidingProductId === productToHide.id}
                                 className="rounded bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-60"
                             >
-                                {hidingProductId === productToHide.id ? "Ocultando..." : "Ocultar producto"}
+                                {hidingProductId === productToHide.id ? "Eliminando..." : "Eliminar producto"}
                             </button>
                         </div>
                     </div>
