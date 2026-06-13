@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
+import { formatCurrency } from "../utils/price.js";
 
 const API = import.meta.env.VITE_BACKEND_URL?.replace(/\/+$/, "") || "";
 
@@ -49,9 +50,6 @@ export default function NewToast({ toast, onClose }) {
     }, [toast]);
 
     if (!visible) return null;
-
-    const isWholesale = window.location.pathname.startsWith("/mayorista");
-    const pricePrefix = isWholesale ? "$" : "$";
 
     const toastImage = toAbsUrl(data?.product?.image || data?.product?.image_url || "");
     const hasAction = Boolean(data?.actionLabel);
@@ -125,7 +123,7 @@ export default function NewToast({ toast, onClose }) {
                             <span className="flex items-center gap-2 text-xs sm:text-sm">
                                 <span className="font-semibold text-amber-300">
                                     {data.product.price !== null && data.product.price !== undefined
-                                        ? `${pricePrefix}${data.product.price.toLocaleString("es-AR")}`
+                                        ? formatCurrency(data.product.price)
                                         : "Consultar"}
                                 </span>
                                 {hasAction && (

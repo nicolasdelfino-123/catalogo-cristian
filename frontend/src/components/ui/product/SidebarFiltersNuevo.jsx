@@ -3,6 +3,7 @@ import { Menu, X } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { withWholesale } from "../../../utils/wholesaleMode"; // ✅ ruta correcta desde /components/product
 import { PERFUME_CATEGORY_TREE as CATEGORIES } from "../../../utils/perfumeCategories.js";
+import { formatCurrency } from "../../../utils/price.js";
 
 export default function SidebarFiltersNuevo({
     currentCategorySlug,
@@ -95,14 +96,12 @@ export default function SidebarFiltersNuevo({
             const maxActive = currentMax !== priceMax;
 
             if (minActive || maxActive) {
-                const minLabel = currentMin.toLocaleString("es-AR");
-                const maxLabel = currentMax.toLocaleString("es-AR");
                 const priceLabel =
                     minActive && maxActive
-                        ? `$${minLabel} - $${maxLabel}`
+                        ? `${formatCurrency(currentMin)} - ${formatCurrency(currentMax)}`
                         : minActive
-                            ? `Desde $${minLabel}`
-                            : `Hasta $${maxLabel}`;
+                            ? `Desde ${formatCurrency(currentMin)}`
+                            : `Hasta ${formatCurrency(currentMax)}`;
 
                 tags.push({
                     type: "price",
@@ -267,8 +266,8 @@ export default function SidebarFiltersNuevo({
                 </h4>
 
                 <div className="flex items-center justify-between text-sm mb-2">
-                    <span>${p.min.toLocaleString("es-AR")}</span>
-                    <span>${p.max.toLocaleString("es-AR")}</span>
+                    <span>{formatCurrency(p.min)}</span>
+                    <span>{formatCurrency(p.max)}</span>
                 </div>
                 <div className="flex gap-2 mt-3">
                     <button

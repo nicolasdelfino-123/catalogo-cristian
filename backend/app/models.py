@@ -333,6 +333,8 @@ class OrderItem(db.Model):
             'price': self.price,
             'product_name': self.product.name if self.product else None,
             'product_brand': self.product.brand if self.product else None,
+            'product_price': self.product.price if self.product else None,
+            'product_price_wholesale': self.product.price_wholesale if self.product else None,
             'product_volume_ml': self.product.volume_ml if self.product else None,
             'selected_flavor': self.selected_flavor,
             'selected_size_ml': self.selected_size_ml if self.selected_size_ml is not None else (self.product.volume_ml if self.product else None),

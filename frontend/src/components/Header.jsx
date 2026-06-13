@@ -4,7 +4,7 @@ import Cart from "../components/Cart.jsx";
 import AccountDropdown from "../components/AccountDropdown.jsx";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { withWholesale } from "../utils/navigation.js";
-import { formatPrice } from "../utils/price.js";
+import { formatCurrency } from "../utils/price.js";
 import { Search, ShoppingCart } from "lucide-react";
 import { PERFUME_CATEGORY_TREE } from "../utils/perfumeCategories.js";
 import { storeConfig } from "../config/storeConfig.js";
@@ -657,10 +657,10 @@ export default function Header() {
                           <div className="text-sm font-bold text-green-600">
                             {location.pathname.startsWith("/mayorista")
                               ? wholesalePrice && wholesalePrice > 0
-                                ? `${formatPrice(wholesalePrice)}`
+                                ? formatCurrency(wholesalePrice)
                                 : "Consultar"
                               : retailPrice && retailPrice > 0
-                                ? `$${formatPrice(retailPrice)}`
+                                ? formatCurrency(retailPrice)
                                 : "Consultar"}
                           </div>
                         </div>
@@ -736,11 +736,11 @@ export default function Header() {
                                 {location.pathname.startsWith("/mayorista")
                                   ? (
                                     wholesalePrice && wholesalePrice > 0
-                                      ? `${formatPrice(wholesalePrice)}`
+                                      ? formatCurrency(wholesalePrice)
                                       : "Consultar"
                                   )
                                   : (retailPrice && retailPrice > 0
-                                    ? `$${formatPrice(retailPrice)}`
+                                    ? formatCurrency(retailPrice)
                                     : "Consultar")
                                 }
                               </div>

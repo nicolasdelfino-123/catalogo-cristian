@@ -1,8 +1,9 @@
 import { useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Context } from '../js/store/appContext.jsx';
+import { formatCurrency } from "../utils/price.js";
 
-const moneyAR = (n) => Number(n || 0).toLocaleString("es-AR", { style: "currency", currency: "ARS" });
+const moneyAR = (n) => formatCurrency(n || 0);
 const dateAR = (iso) => new Date(iso).toLocaleDateString("es-AR", { day: "numeric", month: "long", year: "numeric" });
 
 export default function OrderListPage() {

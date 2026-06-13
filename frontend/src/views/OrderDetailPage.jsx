@@ -1,25 +1,32 @@
 import { useContext, useEffect, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Context } from '../js/store/appContext.jsx';
+import { formatCurrency } from "../utils/price.js";
 
-const moneyAR = (n) =>
-    Number(n || 0).toLocaleString("es-AR", { style: "currency", currency: "ARS" });
+const moneyAR = (n) => formatCurrency(n || 0);
 
 export default function OrderDetailPage() {
     const { store, actions } = useContext(Context);
     const { orderId } = useParams();
+    const orders = Array.isArray(store.orders) ? store.orders : [];
 
     useEffect(() => {
-        if (!store.orders?.length) actions.fetchOrders();
-    }, []);
+        if (!orders.length) actions.fetchOrders();
+    }, [orders.length]);
 
     const order = useMemo(() => {
-        return store.orders.find(
+        return orders.find(
             (p) =>
                 String(p.id) === String(orderId) ||
                 `${p.id}-${p.public_order_number}` === String(orderId)
         );
-    }, [store.orders, orderId]);
+    }, [orders, orderId]);
+
+    const orderItems = Array.isArray(order?.order_items)
+        ? order.order_items
+        : Array.isArray(order?.items)
+            ? order.items
+            : [];
 
 
 
@@ -55,19 +62,24 @@ export default function OrderDetailPage() {
                             </tr>
                         </thead>
                         <tbody>
-                            {(order.order_items || order.items || []).map((it) => (
-                                <tr key={it.id} className="border-b last:border-0">
+                            {orderItems.map((it, index) => {
+                                const quantity = Number(it.quantity || 0);
+                                const price = Number(it.price || 0);
+
+                                return (
+                                <tr key={it.id || `${it.product_id || "item"}-${index}`} className="border-b last:border-0">
                                     <td className="py-2 px-4">
                                         {it.product_name || `#${it.product_id}`}
                                         {it.selected_flavor ? ` (${it.selected_flavor})` : ""}
                                     </td>
-                                    <td className="py-2 px-4">{it.quantity}</td>
-                                    <td className="py-2 px-4">{moneyAR(it.price)}</td>
+                                    <td className="py-2 px-4">{quantity}</td>
+                                    <td className="py-2 px-4">{moneyAR(price)}</td>
                                     <td className="py-2 px-4">
-                                        {moneyAR((it.quantity || 0) * (it.price || 0))}
+                                        {moneyAR(quantity * price)}
                                     </td>
                                 </tr>
-                            ))}
+                                );
+                            })}
                         </tbody>
                     </table>
                 </div>

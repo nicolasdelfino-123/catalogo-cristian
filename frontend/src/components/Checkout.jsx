@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { Context } from '../js/store/appContext'
 import { initMercadoPago, Wallet } from '@mercadopago/sdk-react'
 import logo from '@/assets/mp-logo1.png';
+import { formatCurrency } from '../utils/price.js';
 
 
 const provincesAR = [
@@ -837,7 +838,7 @@ const Checkout = () => {
                                             <p className="text-gray-600 text-sm">Cantidad: {item.quantity}</p>
                                         </div>
                                     </div>
-                                    <p className="font-semibold">${(item.price * item.quantity).toLocaleString()}</p>
+                                    <p className="font-semibold">{formatCurrency(item.price * item.quantity)}</p>
                                 </div>
                             ))}
                         </div>
@@ -845,7 +846,7 @@ const Checkout = () => {
                         <div className="border-t pt-4 mt-4 space-y-2">
                             <div className="flex justify-between">
                                 <span>Subtotal:</span>
-                                <span>${subtotal.toLocaleString()}</span>
+                                <span>{formatCurrency(subtotal)}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span>Envío:</span>
@@ -854,14 +855,14 @@ const Checkout = () => {
                                         ? "A coordinar"
                                         : shippingCost === 0
                                             ? "Gratis"
-                                            : `$${shippingCost.toLocaleString()}`}
+                                            : formatCurrency(shippingCost)}
                                 </span>
                             </div>
 
 
                             <div className="flex justify-between text-lg font-bold border-t pt-2">
                                 <span>Total:</span>
-                                <span>${total.toLocaleString()}</span>
+                                <span>{formatCurrency(total)}</span>
                             </div>
                         </div>
                     </div>

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { X } from "lucide-react";
 import { formatCouponMoney, getCouponFromOrder } from "../utils/coupons.js";
 import { storeConfig } from "../config/storeConfig.js";
+import { formatCurrency, getCurrencySymbol } from "../utils/price.js";
 
 const API = import.meta.env.VITE_BACKEND_URL?.replace(/\/+$/, "") || "";
 
@@ -125,7 +126,7 @@ export default function AdminPedidos() {
 
                                         <td className="p-2">{o.customer_first_name} {o.customer_last_name}</td>
                                         {/*     <td className="p-2">{o.customer_email}</td> */}
-                                        <td className="p-2">${o.total_amount?.toLocaleString() || 0}</td>
+                                        <td className="p-2">{formatCurrency(o.total_amount || 0)}</td>
                                         {/*     <td className="p-2">
                                     <span
                                         className={`px-2 py-1 rounded text-xs ${o.status === "enviado"
@@ -200,9 +201,17 @@ export default function AdminPedidos() {
                             return Number.isFinite(n) && n > 0 ? `${Math.floor(n)}ml` : null;
                         };
 
-                        // detectar mayorista: si los precios parecen mayoristas
-                        const isWholesale = items.some(i => i.price && i.price < 1000);
-                        const currency = isWholesale ? "$" : "$";
+                        const orderType =
+                            selected.billing_address?.order_type ||
+                            selected.shipping_address?.order_type;
+                        const isWholesale = orderType
+                            ? orderType === "wholesale"
+                            : items.some((i) => {
+                                const itemPrice = Number(i.price);
+                                const wholesalePrice = Number(i.product_price_wholesale ?? i.product?.price_wholesale);
+                                return wholesalePrice > 0 && itemPrice === wholesalePrice;
+                            });
+                        const currency = getCurrencySymbol();
                         const coupon = couponEnabled ? getCouponFromOrder(selected) : null;
                         const customerPhone =
                             selected.customer_phone ||
@@ -315,11 +324,11 @@ export default function AdminPedidos() {
                                                             </td>
 
                                                             <td className="p-2 text-right">
-                                                                {currency}{i.price?.toLocaleString() || 0}
+                                                                {formatCurrency(i.price || 0)}
                                                             </td>
 
                                                             <td className="p-2 text-right">
-                                                                {currency}{(i.quantity * i.price).toLocaleString() || 0}
+                                                                {formatCurrency((i.quantity || 0) * (i.price || 0))}
                                                             </td>
 
                                                         </tr>
@@ -335,7 +344,7 @@ export default function AdminPedidos() {
                                                                 Subtotal original
                                                             </td>
                                                             <td className="p-2 text-right line-through">
-                                                                {currency}{formatCouponMoney(coupon.subtotal)}
+                                                                {currency} {formatCouponMoney(coupon.subtotal)}
                                                             </td>
                                                         </tr>
 
@@ -344,7 +353,7 @@ export default function AdminPedidos() {
                                                                 Descuento {coupon.code}
                                                             </td>
                                                             <td className="p-2 text-right">
-                                                                -{currency}{formatCouponMoney(coupon.discount)}
+                                                                -{currency} {formatCouponMoney(coupon.discount)}
                                                             </td>
                                                         </tr>
                                                     </>
@@ -356,7 +365,7 @@ export default function AdminPedidos() {
                                                     </td>
 
                                                     <td className="p-2 text-right">
-                                                        {currency}{formatCouponMoney(selected.total_amount)}
+                                                        {currency} {formatCouponMoney(selected.total_amount)}
                                                     </td>
                                                 </tr>
                                             </tfoot>
@@ -400,7 +409,7 @@ export default function AdminPedidos() {
                                             {orderToHide.customer_first_name} {orderToHide.customer_last_name}
                                         </div>
                                         <div className="text-gray-600">
-                                            ${orderToHide.total_amount?.toLocaleString() || 0}
+                                            {formatCurrency(orderToHide.total_amount || 0)}
                                         </div>
                                     </div>
                                     <p className="text-sm text-gray-600">

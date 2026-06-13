@@ -31,6 +31,12 @@ export const storeConfig = {
         /*       footerText: "Perfumes árabes originales en Argentina.", */
     },
 
+    currency: {
+        // Texto visible antes de los precios en cards, detalle, carrito, admin, toast y presupuestos.
+        // Ejemplos: "$", "COP", "USD", "CLP", "S/"
+        symbol: "COP",
+    },
+
     hero: {
         // Defaults responsive: si dejás estos valores como están, la imagen no se recorta.
         // Para ajustar manualmente podés usar px, %, vh, vw, calc(...), etc.

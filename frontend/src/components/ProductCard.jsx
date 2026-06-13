@@ -1,7 +1,7 @@
 import { useState, useContext } from "react"
 import { Context } from "../js/store/appContext"
 import { useNavigate, useLocation } from "react-router-dom"
-import { formatPrice } from "../utils/price.js";
+import { formatCurrency } from "../utils/price.js";
 import { getDisplayCategoryName } from "../utils/perfumeCategories.js";
 
 
@@ -59,7 +59,6 @@ export default function ProductCard({ product }) {
   const finalPrice = isWholesale
     ? (wholesalePrice > 0 ? wholesalePrice : null)
     : retailPrice;
-  const pricePrefix = isWholesale ? "$" : "$";
 
 
 
@@ -172,7 +171,7 @@ export default function ProductCard({ product }) {
         <div className="mb-3 text-center">
           {finalPrice !== null ? (
             <span className="text-xl sm:text-2xl md:text-3xl font-bold text-purple-600">
-              {pricePrefix}{formatPrice(finalPrice)}
+              {formatCurrency(finalPrice)}
             </span>
           ) : (
             <span className="text-sm text-gray-400 italic">

@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
-import { formatPrice } from "../utils/price.js";
+import { formatCurrency } from "../utils/price.js";
 import { Context } from '../js/store/appContext.jsx';
 import sinImagen from '@/assets/sin_imagen.jpg'
 import { getCategorySlugFromName, getDisplayCategoryName } from "../utils/perfumeCategories.js";
@@ -308,7 +308,7 @@ const ProductDetail = () => {
                                     product.price_wholesale > 0 ? (
                                         <>
                                             <span className="text-4xl font-bold text-purple-600">
-                                                ${formatPrice(product.price_wholesale)}
+                                                {formatCurrency(product.price_wholesale)}
                                             </span>
                                             <div className="text-xs text-gray-500 mt-1">
                                                 Precio mayorista
@@ -321,7 +321,7 @@ const ProductDetail = () => {
                                     )
                                 ) : (
                                     <span className="text-4xl font-bold text-purple-600">
-                                        ${formatPrice(product.price)}
+                                        {formatCurrency(product.price)}
                                     </span>
                                 )}
                             </div>

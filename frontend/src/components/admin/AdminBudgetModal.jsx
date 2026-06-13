@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { formatPrice } from "../../utils/price.js";
+import { formatCurrency } from "../../utils/price.js";
 import { storeConfig } from "../../config/storeConfig.js";
 
 const PRICE_MODE_RETAIL = "retail";
@@ -96,14 +96,11 @@ const buildBudgetMessage = ({
     const lines = items.map((item) => {
         const price = Number(prices[item.id] ?? 0);
         const mlSuffix = item.mlLabel ? ` ${item.mlLabel}` : "";
-        const currency = priceMode === PRICE_MODE_WHOLESALE ? "$" : "$";
-        const totalLine = price > 0 ? ` - ${currency} ${formatPrice(price)}` : " - Consultar";
+        const totalLine = price > 0 ? ` - ${formatCurrency(price)}` : " - Consultar";
         return `- ${item.quantity}x ${item.name}${mlSuffix}${totalLine}`;
     });
 
     const total = items.reduce((acc, item) => acc + (Number(prices[item.id] ?? 0) * Number(item.quantity || 0)), 0);
-    const currency = priceMode === PRICE_MODE_WHOLESALE ? "$" : "$";
-
     return [
         greeting,
         "",
@@ -111,7 +108,7 @@ const buildBudgetMessage = ({
         "",
         ...lines,
         "",
-        `Total: ${currency} ${formatPrice(total)}`,
+        `Total: ${formatCurrency(total)}`,
         "",
         "Cualquier ajuste que necesites, te lo preparo.",
     ].join("\n");
@@ -217,7 +214,6 @@ export default function AdminBudgetModal({
 
     const selectedPhonePrefix = phonePrefixOptions.find((option) => option.value === phonePrefix) || phonePrefixOptions[0];
     const canSend = budgetItems.length > 0 && customerName.trim() && selectedPhonePrefix?.value && normalizeDigits(phone).length >= 8;
-
     const applyCustomQuantity = () => {
         const qty = Math.max(1, Number(newProduct.quantityDraft) || 1);
         setNewProduct((prev) => ({
@@ -460,8 +456,6 @@ export default function AdminBudgetModal({
                         {budgetItems.map((item) => {
                             const priceValue = Number(prices[item.id] ?? 0);
                             const isEditing = editingId === item.id;
-                            const currency = priceMode === PRICE_MODE_WHOLESALE ? "$" : "$";
-
                             return (
                                 <div
                                     key={item.id}
@@ -519,7 +513,7 @@ export default function AdminBudgetModal({
                                         ) : (
                                             <div className="flex items-center gap-2 md:justify-end">
                                                 <span className="tabular-nums md:inline-flex md:items-center md:gap-1 md:whitespace-nowrap">
-                                                    {currency} {formatPrice(priceValue)}
+                                                    {formatCurrency(priceValue)}
                                                 </span>
                                                 <button
                                                     type="button"
@@ -597,7 +591,7 @@ export default function AdminBudgetModal({
                         <div>
                             <div className="text-sm text-stone-500">Total estimado</div>
                             <div className="text-lg font-semibold text-stone-900 md:inline-flex md:items-center md:gap-1 md:whitespace-nowrap">
-                                {priceMode === PRICE_MODE_WHOLESALE ? "$" : "$"} {formatPrice(total)}
+                                {formatCurrency(total)}
                             </div>
                         </div>
 

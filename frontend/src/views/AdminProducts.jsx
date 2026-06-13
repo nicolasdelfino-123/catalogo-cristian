@@ -2,7 +2,7 @@ import { Fragment, useEffect, useMemo, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import sinImagen from '@/assets/sin_imagen.jpg'
 import { Link, useNavigate } from "react-router-dom";
-import { formatPrice } from "../utils/price.js";
+import { formatCurrency, formatPrice, getCurrencySymbol } from "../utils/price.js";
 import { storeConfig } from "../config/storeConfig.js";
 import AdminBudgetToolbar from "../components/admin/AdminBudgetToolbar.jsx";
 import AdminBudgetSelectionCell from "../components/admin/AdminBudgetSelectionCell.jsx";
@@ -446,6 +446,7 @@ const getExtraCategoryIds = (product = {}) => {
 
 // ----- Componente principal -----
 export default function AdminProducts() {
+    const currencySymbol = getCurrencySymbol();
     const couponEnabled = storeConfig.features?.coupon === true;
     const priceAdjustmentEnabled = storeConfig.features?.priceAdjustment === true;
     const [products, setProducts] = useState([])
@@ -1899,7 +1900,7 @@ export default function AdminProducts() {
                                                 </div>
                                             ) : (
                                                 <div className="flex items-center justify-center gap-2">
-                                                    <span className="whitespace-nowrap tabular-nums">$ {Number(retailShown).toLocaleString("es-AR")}</span>
+                                                    <span className="whitespace-nowrap tabular-nums">{formatCurrency(retailShown)}</span>
                                                     <button
                                                         type="button"
                                                         className="px-2 py-1 border rounded hover:bg-gray-50"
@@ -1944,7 +1945,7 @@ export default function AdminProducts() {
                                             ) : (
                                                 <div className="flex items-center justify-center gap-2">
                                                     <span className="whitespace-nowrap tabular-nums">
-                                                        {wholesaleShown ? `$ ${formatPrice(wholesaleShown)}` : "—"}
+                                                        {wholesaleShown ? formatCurrency(wholesaleShown) : "—"}
                                                     </span>
                                                     <button
                                                         type="button"
@@ -2432,7 +2433,7 @@ export default function AdminProducts() {
                                 </p>
                             )}
                             <p>
-                                <strong>Precio:</strong> $ {Number(productToHide.price || 0).toLocaleString("es-AR")}
+                                <strong>Precio:</strong> {formatCurrency(productToHide.price || 0)}
                             </p>
                         </div>
 
@@ -2606,11 +2607,11 @@ export default function AdminProducts() {
 
                                 <div className="relative">
                                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                                        $
+                                        {currencySymbol}
                                     </span>
 
                                     <input
-                                        className="w-full border rounded pl-7 pr-3 py-2"
+                                        className="w-full border rounded pl-14 pr-3 py-2"
                                         placeholder="Precio minorista"
                                         type="text"
                                         inputMode="decimal"
@@ -2633,11 +2634,11 @@ export default function AdminProducts() {
 
                                 <div className="relative">
                                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                                        US$
+                                        {currencySymbol}
                                     </span>
 
                                     <input
-                                        className="w-full border rounded pl-12 pr-3 py-2"
+                                        className="w-full border rounded pl-14 pr-3 py-2"
                                         placeholder="Opcional"
                                         type="text"
                                         inputMode="decimal"
@@ -2660,9 +2661,9 @@ export default function AdminProducts() {
                                 {(form.volume_options || []).map((row, idx) => (
                                     <div key={`${row.ml}-${idx}`} className="flex items-center justify-between text-sm border rounded px-3 py-2">
                                         <span>
-                                            {row.ml != null ? `${row.ml} ml` : "Sin ml"} · {Number(row.price) > 0 ? `$${Number(row.price).toLocaleString("es-AR")}` : "Consultar"}
+                                            {row.ml != null ? `${row.ml} ml` : "Sin ml"} · {Number(row.price) > 0 ? formatCurrency(row.price) : "Consultar"}
                                             {Number(row.price_wholesale) > 0
-                                                ? ` · Mayorista $${formatPrice(row.price_wholesale)}`
+                                                ? ` · Mayorista ${formatCurrency(row.price_wholesale)}`
                                                 : ""}
                                             {` · Stock ${Number.isFinite(Number(row.stock)) ? Number(row.stock) : 0}`}
                                         </span>
@@ -3183,7 +3184,7 @@ export default function AdminProducts() {
                                         <tr key={idx} className="border-t">
                                             <td className="p-2">{p.name}</td>
                                             <td className="p-2">{getDisplayCategoryName(p)}</td>
-                                            <td className="p-2">${p.price}</td>
+                                            <td className="p-2">{formatCurrency(p.price)}</td>
                                             <td className="p-2">{p.stock}</td>
                                             <td className="p-2">{p.flavor_catalog?.length || 0}</td>
                                         </tr>

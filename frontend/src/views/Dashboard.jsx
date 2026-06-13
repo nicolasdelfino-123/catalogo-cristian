@@ -3,6 +3,7 @@ import { Context } from "../js/store/appContext.jsx";
 import { Link } from "react-router-dom";
 import AccountDetailsPage from "./AccountDetailsPage.jsx";
 import AddressesPage from "./AddressesPage.jsx";
+import { formatCurrency } from "../utils/price.js";
 
 function AccessCard({ onClick, title, icon, isActive }) {
     return (
@@ -20,7 +21,7 @@ function AccessCard({ onClick, title, icon, isActive }) {
     );
 }
 
-const moneyAR = (n) => Number(n || 0).toLocaleString("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 });
+const moneyAR = (n) => formatCurrency(n || 0);
 const dateAR = (iso) => new Date(iso).toLocaleDateString("es-AR", { day: "numeric", month: "long", year: "numeric" });
 
 export default function Dashboard() {

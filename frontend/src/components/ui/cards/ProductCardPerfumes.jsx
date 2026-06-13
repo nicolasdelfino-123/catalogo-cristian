@@ -2,7 +2,7 @@ import { useState, useContext, useMemo, useEffect } from "react";
 import { Context } from "../../../js/store/appContext.jsx";
 import { useNavigate, useLocation } from "react-router-dom";
 import sinImagen from "@/assets/sin_imagen.jpg";
-import { formatPrice } from "../../../utils/price.js";
+import { formatCurrency } from "../../../utils/price.js";
 import { getDisplayCategoryName } from "../../../utils/perfumeCategories.js";
 import { storeConfig } from "../../../config/storeConfig.js";
 
@@ -167,7 +167,6 @@ export default function ProductCardPerfumes({ product, returnTo, isGrid = true }
     const finalPrice = isWholesale
         ? (wholesalePrice > 0 ? wholesalePrice : null)
         : (retailPrice > 0 ? retailPrice : null);
-    const pricePrefix = isWholesale ? "$" : "$";
     const displayCategoryName = getDisplayCategoryName(product);
     const productCardMeta = storeConfig.catalog?.productCardMeta === "brand" ? "brand" : "category";
     const displayMetaText =
@@ -284,7 +283,7 @@ export default function ProductCardPerfumes({ product, returnTo, isGrid = true }
                 <div className="mt-2 sm:mt-4 text-center">
                     {finalPrice !== null ? (
                         <span className="text-lg sm:text-xl font-semibold text-black tracking-tight">
-                            {pricePrefix}{formatPrice(finalPrice)}
+                            {formatCurrency(finalPrice)}
                         </span>
                     ) : (
                         <span className="text-xs text-stone-400 italic">

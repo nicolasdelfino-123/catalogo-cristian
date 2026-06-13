@@ -1,4 +1,5 @@
 import { formatCouponMoney } from "../../utils/coupons.js";
+import { getCurrencySymbol } from "../../utils/price.js";
 
 export default function CouponBox({
     code,
@@ -9,7 +10,7 @@ export default function CouponBox({
     status,
     loading,
     subtotal,
-    pricePrefix = "$",
+    pricePrefix = getCurrencySymbol(),
 }) {
     return (
         <div className="rounded-lg border bg-white p-3 shadow-sm">
@@ -67,12 +68,12 @@ export default function CouponBox({
                     <div className="flex justify-between text-gray-500">
                         <span>Subtotal original</span>
                         <span className="line-through">
-                            {pricePrefix}{formatCouponMoney(appliedCoupon.subtotal)}
+                            {pricePrefix} {formatCouponMoney(appliedCoupon.subtotal)}
                         </span>
                     </div>
                     <div className="flex justify-between text-emerald-700">
                         <span>Descuento {appliedCoupon.code}</span>
-                        <span>-{pricePrefix}{formatCouponMoney(appliedCoupon.discount)}</span>
+                        <span>-{pricePrefix} {formatCouponMoney(appliedCoupon.discount)}</span>
                     </div>
                 </div>
             )}

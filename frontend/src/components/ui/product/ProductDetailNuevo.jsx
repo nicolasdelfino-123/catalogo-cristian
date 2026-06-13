@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Context } from "../../../js/store/appContext.jsx";
 import sinImagen from "@/assets/sin_imagen.jpg";
-import { formatPrice } from "../../../utils/price.js";
+import { formatCurrency } from "../../../utils/price.js";
 import { getDisplayCategoryName } from "../../../utils/perfumeCategories.js";
 
 /* =========================
@@ -237,7 +237,6 @@ export default function ProductDetailNuevo() {
     const finalPrice = isWholesale
         ? (wholesalePrice > 0 ? wholesalePrice : null)
         : (retailPrice > 0 ? retailPrice : null);
-    const pricePrefix = isWholesale ? "$" : "$";
 
     /* =========================
        EFFECTS
@@ -431,7 +430,7 @@ export default function ProductDetailNuevo() {
 
                         <div className="text-2xl sm:text-2xl font-semibold text-black mb-4">
                             {finalPrice !== null
-                                ? `${pricePrefix}${formatPrice(finalPrice)}`
+                                ? formatCurrency(finalPrice)
                                 : "Consultar"}
                         </div>
                         {sizeOptions.length > 0 && (

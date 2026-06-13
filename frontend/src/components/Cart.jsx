@@ -5,6 +5,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { storeConfig } from "../config/storeConfig.js";
 import CuponBox from "./cart/CuponBox.jsx";
 import { normalizeCouponCode, validateCoupon } from "../utils/coupons.js";
+import { formatCurrency, getCurrencySymbol } from "../utils/price.js";
 
 
 const API = import.meta.env.VITE_BACKEND_URL?.replace(/\/+$/, "") || "";
@@ -94,7 +95,7 @@ export default function Cart({ isOpen: controlledOpen, onClose: controlledOnClos
   const navigate = useNavigate();
   const location = useLocation();
   const isWholesale = location.pathname.startsWith("/mayorista");
-  const pricePrefix = isWholesale ? "$" : "$";
+  const pricePrefix = getCurrencySymbol();
   const whatsappPhone = storeConfig.contact.whatsapp;
   const couponEnabled = storeConfig.features?.coupon === true;
 
@@ -246,8 +247,8 @@ export default function Cart({ isOpen: controlledOpen, onClose: controlledOnClos
         const subtotal = price * qty;
         total += subtotal;
 
-        message += `   ${pricePrefix}${price.toLocaleString("es-AR")} c/u\n`;
-        message += `   Subtotal: ${pricePrefix}${subtotal.toLocaleString("es-AR")}\n\n`;
+        message += `   ${formatCurrency(price)} c/u\n`;
+        message += `   Subtotal: ${formatCurrency(subtotal)}\n\n`;
       } else {
         hasUnknownPrice = true;
         message += `   Precio: Consultar\n\n`;
@@ -257,11 +258,11 @@ export default function Cart({ isOpen: controlledOpen, onClose: controlledOnClos
     if (hasUnknownPrice) {
       message += "*TOTAL:* Consultar\n\n";
     } else if (couponEnabled && couponTotals) {
-      message += `*Subtotal original:* ~${pricePrefix}${Math.round(total).toLocaleString("es-AR")}~\n`;
-      message += `*Cupón ${couponTotals.code} (${couponTotals.percent}% OFF):* -${pricePrefix}${couponTotals.discount.toLocaleString("es-AR")}\n`;
-      message += `*TOTAL CON DESCUENTO:* ${pricePrefix}${couponTotals.total.toLocaleString("es-AR")}\n\n`;
+      message += `*Subtotal original:* ~${formatCurrency(Math.round(total))}~\n`;
+      message += `*Cupón ${couponTotals.code} (${couponTotals.percent}% OFF):* -${formatCurrency(couponTotals.discount)}\n`;
+      message += `*TOTAL CON DESCUENTO:* ${formatCurrency(couponTotals.total)}\n\n`;
     } else {
-      message += `*TOTAL:* ${pricePrefix}${total.toLocaleString("es-AR")}\n\n`;
+      message += `*TOTAL:* ${formatCurrency(total)}\n\n`;
     }
 
     // 🚚 info de envío (PRO y simple)
@@ -375,7 +376,10 @@ ${couponEnabled && couponTotals ? `Cupón aplicado: ${couponTotals.code} (${coup
         order_items: orderItems,
         total_amount: finalTotal,
         coupon_code: couponEnabled ? couponTotals?.code || null : null,
-        billing_address: couponEnabled && couponTotals ? { coupon: couponTotals } : {},
+        billing_address: {
+          order_type: isWholesale ? "wholesale" : "retail",
+          ...(couponEnabled && couponTotals ? { coupon: couponTotals } : {}),
+        },
         status: "pendiente"
       })
     });
@@ -494,7 +498,7 @@ ${couponEnabled && couponTotals ? `Cupón aplicado: ${couponTotals.code} (${coup
                           </h4>
                           <p className="text-gray-900 font-semibold">
                             {getItemPrice(item) !== null
-                              ? `${pricePrefix}${getItemPrice(item).toLocaleString("es-AR")}`
+                              ? formatCurrency(getItemPrice(item))
                               : "Consultar"}
                           </p>
                           {getSelectedMl(item) && (
@@ -550,7 +554,7 @@ ${couponEnabled && couponTotals ? `Cupón aplicado: ${couponTotals.code} (${coup
 
                         <div className="text-right font-semibold">
                           {getItemPrice(item) !== null
-                            ? `${pricePrefix}${(getItemPrice(item) * Number(item.quantity || 0)).toLocaleString("es-AR")}`
+                            ? formatCurrency(getItemPrice(item) * Number(item.quantity || 0))
                             : "Consultar"}
                         </div>
 
@@ -569,7 +573,7 @@ ${couponEnabled && couponTotals ? `Cupón aplicado: ${couponTotals.code} (${coup
             Subtotal <span className="text-sm text-gray-400">(sin envío)</span> :
           </span>
           <span className="font-semibold">
-            {pricePrefix}{total.toLocaleString("es-AR")}
+            {formatCurrency(total)}
           </span>
         </div>
 
@@ -632,10 +636,10 @@ ${couponEnabled && couponTotals ? `Cupón aplicado: ${couponTotals.code} (${coup
             <span className="text-2xl font-semibold text-gray-900 font-serif tracking-wide">
               {couponEnabled && couponTotals && (
                 <span className="block text-sm font-normal text-gray-400 line-through">
-                  {pricePrefix}{Math.round(total).toLocaleString("es-AR")}
+                  {formatCurrency(Math.round(total))}
                 </span>
               )}
-              {pricePrefix}{finalTotal.toLocaleString("es-AR")}
+              {formatCurrency(finalTotal)}
             </span>
           </div>
 
