@@ -371,7 +371,7 @@ export default function Header() {
                 <img
                   src={headerLogo}
                   alt={storeConfig.storeName.trim()}
-                  className="mt-[-0px] lg:mt-[-0px] h-[55px] lg:h-[55px] object-contain transition-all duration-300"
+                  className="mt-[8px] lg:mt-[10px] h-[90px] lg:h-[95px] object-contain transition-all duration-300"
                 />
               </Link>
             </div>

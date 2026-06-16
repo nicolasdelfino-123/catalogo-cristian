@@ -2,12 +2,12 @@ export const storeConfig = {
     storeName: " Store Perfumes",
 
     features: {
-        showHeaderContact: true,
+        showHeaderContact: false,
         showBrandCarousel: true,
         coupon: false,
         priceAdjustment: false,
         // Activa/desactiva la categoría virtual "Más Vendidos" en header, footer, filtros, admin y modal de productos.
-        bestSellers: true,
+        bestSellers: false,
         headerTheme: "black", // "black" | "white"
         footerTheme: "black", // "black" | "white"
     },
@@ -116,25 +116,21 @@ export const storeConfig = {
         // slug es opcional; si no lo ponés, usa el slug técnico definido en perfumeCategories o lo genera desde el label.
         categories: [
             {
-                id: 1,
-                label: "Perfumes",
-                slug: "perfumes",
+                id: 100,
+                label: "Perfumes Árabes",
+                slug: "perfumes-arabes",
                 emoji: "✨",
                 children: [
-                    { id: 3, label: "Femeninos", slug: "femeninos", emoji: "🌸" },
-                    { id: 4, label: "Masculinos", slug: "masculinos", emoji: "🖤" },
-                    { id: 5, label: "Unisex", slug: "unisex", emoji: "✨" },
+                    { id: 1, label: "Masculino", slug: "masculino", emoji: "🖤" },
+                    { id: 2, label: "Femeninos", slug: "femeninos", emoji: "🌸" },
+                    { id: 3, label: "Unisex", slug: "unisex", emoji: "✨" },
                 ],
             },
             {
-                id: 2,
-                label: "Gafas",
-                slug: "gafas",
-                emoji: "🕶️",
-                children: [
-                    { id: 6, label: "Ray-Ban", slug: "ray-ban", emoji: "🕶️" },
-                    { id: 7, label: "Scuderia Ferrari", slug: "scuderia-ferrari", emoji: "🏎️" },
-                ],
+                id: 4,
+                label: "Miniaturas",
+                slug: "miniaturas",
+                emoji: "🧴",
             },
         ],
     },
@@ -146,9 +142,9 @@ export const storeConfig = {
     },
 
     contact: {
-        whatsapp: "5493534793366",
+        whatsapp: "5493446622178",
         whatsappMessage: "Hola, quiero consultar por un perfume del catálogo",
-        whatsappDisplay: "+56 9 6407 7278",
+        whatsappDisplay: "+54 9 3446 62-2178",
         // Prefijos para el modal de presupuesto. Con un solo elemento se muestra fijo; con varios aparece un selector.
         phonePrefixes: [
             /* { label: "+56", value: "56", placeholder: "964077278" }, */
@@ -157,8 +153,8 @@ export const storeConfig = {
                   { label: "+58", value: "58", placeholder: "4121234567" }, */
         ],
 
-        instagram: "https://www.instagram.com/danna_decants_puq/",
-        instagramDisplay: "@danna_decants_puq",
+        instagram: "https://www.instagram.com/elrincon_delperfume/",
+        instagramDisplay: "@elrincon_delperfume",
 
         email: "nicolasdelfino585@gmail.com",
         /*  emailDisplay: "nicolasdelfino585@gmail.com", */
@@ -172,13 +168,13 @@ export const storeConfig = {
 
     media: {
         // Hero desktop: se carga desde frontend/public. Escribi solo el nombre del archivo o una ruta publica, por ejemplo "f3_si.png".
-        heroImageDesktop: "porta_si.png",
+        heroImageDesktop: "banner_si.png",
         // Hero mobile: se carga desde frontend/public. Escribi solo el nombre del archivo o una ruta publica, por ejemplo "f3_si.png".
-        heroImageMobile: "porta_movil.png",
+        heroImageMobile: "p_movil.png",
         // GIF del GlobalSpinner: se carga desde frontend/public. Si queres cambiarlo, pone el GIF en public y actualiza este nombre.
-        globalSpinnerGif: "danna_spinner.gif",
-        headerLogo: "logo_attar_prueba.png",
-        footerLogo: "logo_danna.jpeg",
+        globalSpinnerGif: "g_r.gif",
+        headerLogo: "l.png",
+        footerLogo: "l.png",
     },
 
     map: {

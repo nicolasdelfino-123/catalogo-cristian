@@ -95,7 +95,7 @@ export default function InicioNuevo() {
     const MAP_EMBED = storeConfig.map.embed;
     const allProducts = store.products || [];
     const womenCategoryId = mapCategoryIdFromName("Femeninos");
-    const menCategoryId = mapCategoryIdFromName("Masculinos");
+    const menCategoryId = mapCategoryIdFromName("Masculino");
     const getProductPrice = (product) => {
         const price = Number(product?.price);
         return Number.isFinite(price) ? price : Number.POSITIVE_INFINITY;
@@ -291,7 +291,7 @@ export default function InicioNuevo() {
   `}</style>
 
             {/* PRODUCTOS */}
-            <section className="max-w-7xl mx-auto px-2 sm:px-4 py-12">
+            <section className="max-w-7xl mx-auto px-2 sm:px-4 pt-12 pb-8">
                 <div className="text-center mb-10">
                     <h2 className="text-2xl md:text-3xl font-serif font-semibold tracking-wide">
                         Productos Destacados
@@ -316,7 +316,7 @@ export default function InicioNuevo() {
                     </div>
                 )}
             </section>
-            <div className="flex justify-center mt-0 mb-1 lg:px-12 lg:py-12">
+            <div className="flex justify-center px-4 py-8 pb-5 pt-3 lg:px-12">
                 <div
                     onClick={() => navigate(location.pathname.startsWith("/mayorista") ? "/mayorista/products" : "/products")}
                     className="
@@ -342,9 +342,9 @@ shadow-lg shadow-amber-500/20
             {/*  <section id="asesoria">
                 <Asesoria />
             </section> */}
+            {/*
             <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16" id='asesoria'>
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 items-center">
-                    {/* Columna izquierda: texto */}
                     <div className="md:col-span-1 text-center md:text-left">
                         <span className="block text-sm tracking-[0.18em] font-semibold uppercase text-gray-500">
                             ¡Contactanos!
@@ -362,7 +362,6 @@ shadow-lg shadow-amber-500/20
 
                         <div className="mt-6 flex justify-center md:justify-center gap-4">
 
-                            {/* Instagram */}
                             <a
                                 href={IG_URL}
                                 target="_blank"
@@ -376,7 +375,6 @@ shadow-lg shadow-amber-500/20
                                 </svg>
                             </a>
 
-                            {/* WhatsApp */}
                             <a
                                 href={WA_URL}
                                 target="_blank"
@@ -392,11 +390,8 @@ shadow-lg shadow-amber-500/20
                         </div>
                     </div>
 
-                    {/* Divider central (sólo desktop) */}
                     <div className="hidden md:block h-full w-px bg-gradient-to-b from-transparent via-gray-300 to-transparent mx-auto" />
 
-                    {/* Columna derecha: mapa (oscuro por CSS) */}
-                    {/* Columna derecha: mapa (oscuro por CSS) */}
                     <div className="md:col-span-1">
                         <div className="rounded-xl overflow-hidden shadow-lg ring-1 ring-gray-200 bg-black">
                             <div className="aspect-video md:aspect-[4/3] map-dark">
@@ -421,16 +416,14 @@ shadow-lg shadow-amber-500/20
                     </div>
                 </div>
 
-                {/* Filtro para “estilo oscuro” del iframe (sin API key) */}
                 <style>{`
     .map-dark iframe {
-      /* Ajustá estos valores si querés más/menos contraste */
       filter: invert(90%) hue-rotate(180deg) saturate(0.7) brightness(0.85) contrast(1.05);
-      /* Para mejorar la suavidad en algunos navegadores */
       transform: translateZ(0);
     }
   `}</style>
             </section>
+            */}
             {storeConfig.features?.showBrandCarousel !== false && (
                 <section className="relative bg-white py-8 fade-in-section border-y border-gray-200">
                     <div className="relative z-10 overflow-hidden whitespace-nowrap mx-0 md:mx-[104px]">
