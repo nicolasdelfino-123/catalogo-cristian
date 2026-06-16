@@ -8,7 +8,7 @@ export const BEST_SELLERS_CATEGORY_SLUG = "mas-vendidos";
 // Contrato técnico de categorías: estos IDs son los que viajan como category_id a la DB.
 // Los labels, el orden y la jerarquía visible se configuran desde storeConfig.catalog.categories.
 const PERFUME_CATEGORY_ID_DEFINITIONS = [
-    { id: 1, fallbackName: "Masculino", slug: "masculino" },
+    { id: 1, fallbackName: "Masculinos", slug: "masculinos" },
     { id: 2, fallbackName: "Femeninos", slug: "femeninos" },
     { id: 3, fallbackName: "Unisex", slug: "unisex" },
     { id: 4, fallbackName: "Miniaturas", slug: "miniaturas" },

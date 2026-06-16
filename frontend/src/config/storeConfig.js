@@ -121,7 +121,7 @@ export const storeConfig = {
                 slug: "perfumes-arabes",
                 emoji: "✨",
                 children: [
-                    { id: 1, label: "Masculino", slug: "masculino", emoji: "🖤" },
+                    { id: 1, label: "Masculinos", slug: "masculinos", emoji: "🖤" },
                     { id: 2, label: "Femeninos", slug: "femeninos", emoji: "🌸" },
                     { id: 3, label: "Unisex", slug: "unisex", emoji: "✨" },
                 ],

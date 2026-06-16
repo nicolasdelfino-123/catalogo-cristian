@@ -95,7 +95,7 @@ export default function InicioNuevo() {
     const MAP_EMBED = storeConfig.map.embed;
     const allProducts = store.products || [];
     const womenCategoryId = mapCategoryIdFromName("Femeninos");
-    const menCategoryId = mapCategoryIdFromName("Masculino");
+    const menCategoryId = mapCategoryIdFromName("Masculinos");
     const getProductPrice = (product) => {
         const price = Number(product?.price);
         return Number.isFinite(price) ? price : Number.POSITIVE_INFINITY;
